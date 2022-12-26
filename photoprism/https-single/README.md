@@ -1,4 +1,4 @@
-PhotoPrismをTraefikを用いてHTTPSで配信する。
+PhotoPrismをTraefikを用いてHTTPSで配信する。<https://docs.photoprism.app/getting-started/proxies/traefik/>を参考にする。
 
 前提条件:
 * ドメインを所有していること(example.comとする)
