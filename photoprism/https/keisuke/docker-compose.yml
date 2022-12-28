@@ -97,6 +97,7 @@ services:
       # PHOTOPRISM_UID: 1000
       # PHOTOPRISM_GID: 1000
       # PHOTOPRISM_UMASK: 0000
+      PHOTOPRISM_THUMB_UNCACHED: "true"
       HOME: "/photoprism"
     ## Start as a non-root user (see https://docs.docker.com/engine/reference/run/#user)
     # user: "1000:1000"
