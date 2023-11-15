@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: "https://${HOSTNAME}/"
+    volumes:
+      - /tank/vaultwarden:/data
+    labels:
+      - "traefik.docker.network=traefik_default"
+      - "traefik.http.routers.vaultwarden.rule=Host(`${HOSTNAME}`)"
+      - "traefik.http.routers.vaultwarden.tls=true"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=production"
+    networks:
+      - traefik_default
+
+networks:
+  traefik_default:
+    external: true
