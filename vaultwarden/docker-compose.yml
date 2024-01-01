@@ -8,7 +8,7 @@ services:
     environment:
       DOMAIN: "https://${HOSTNAME}/"
     volumes:
-      - /tank/vaultwarden:/data
+      - /tank/selfhosted/vaultwarden:/data
     labels:
       - "traefik.docker.network=traefik_default"
       - "traefik.http.routers.vaultwarden.rule=Host(`${HOSTNAME}`)"
