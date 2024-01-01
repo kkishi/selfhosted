@@ -27,7 +27,7 @@ services:
             # - SEARCH_BACKEND_HOST_NAME=sonic
             # - SEARCH_BACKEND_PASSWORD=SecretPassword
         volumes:
-            - ./data:/data
+            - /tank/selfhosted/archivebox/data:/data
             # - ./archivebox:/app/archivebox    # for developers working on archivebox
         restart: unless-stopped
         # NOTE(keisuke): Uncomment the following block to enable HTTPS connection.
