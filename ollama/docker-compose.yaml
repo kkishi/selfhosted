@@ -10,10 +10,12 @@ services:
     deploy:
       resources:
         reservations:
-          devices:
+          devices:  # Let it use GPU
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    ports:
+      - "11434:11434"  # Expose port 11434 on the host
 
   open-webui:
     build:
