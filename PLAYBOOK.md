@@ -1,7 +1,7 @@
 # Self-Hosted Services Playbook
 
 This playbook outlines the steps to safely maintain and update Traefik,
-Vaultwarden, and PhotoPrism in your environment.
+Vaultwarden, PhotoPrism, and ArchiveBox in your environment.
 
 ## 1. General Principles
 
@@ -29,6 +29,7 @@ after stopping the services.
     cd ~/projects/selfhosted/photoprism/https/satoshi && docker compose stop
     cd ~/projects/selfhosted/photoprism/https/stable-diffusion && \
     docker compose stop
+    cd ~/projects/selfhosted/archivebox && docker compose stop
     ```
 
 2. **Sync the dataset** to the backup server:
@@ -51,7 +52,7 @@ after stopping the services.
 ## 3. Routine Updates (Patch Releases)
 
 These commands pull the latest images for your current version tags.
-(e.g., latest `v3` patch, latest `mariadb:10.6` patch).
+(e.g., latest `v3` patch, latest `mariadb:11.4` patch).
 
 ### Traefik
 
@@ -73,6 +74,12 @@ Repeat for **ayumi**, **keisuke**, **satoshi**, and **stable-diffusion**.
 1. `cd ~/projects/selfhosted/photoprism/https/ayumi`
 2. `docker compose pull && docker compose up -d`
 3. Monitor logs: `docker compose logs -f photoprism`
+
+### ArchiveBox
+
+1. `cd ~/projects/selfhosted/archivebox`
+2. `docker compose pull && docker compose run --rm archivebox init`
+3. `docker compose up -d`
 
 ---
 
@@ -97,7 +104,7 @@ new MariaDB version:
 1. Open the `docker-compose.yml` for the service.
 2. Update the `image:` tag (e.g., `traefik:v3` -> `traefik:v4`).
 3. Run `docker compose up -d`.
-4. **Note for MariaDB**: Major version upgrades (e.g., `10.6` to `11.x`) require
+4. **Note for MariaDB**: Major version upgrades (e.g., `11.4` to `12.x`) require
    a database export and import. **Do not** simply change the tag for MariaDB
    without following the official migration guide.
 

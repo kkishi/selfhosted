@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     environment:
       DOMAIN: "https://${HOSTNAME}/"
+      SIGNUPS_ALLOWED: "false"
     volumes:
       - /tank/selfhosted/vaultwarden:/data
     labels:
