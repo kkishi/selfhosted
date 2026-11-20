@@ -1,34 +1,33 @@
-# Usage:
-#     docker-compose run archivebox init --setup
-#     docker-compose up
-#     echo "https://example.com" | docker-compose run archivebox archivebox add
-#     docker-compose run archivebox add --depth=1 https://example.com/some/feed.rss
-#     docker-compose run archivebox config --set PUBLIC_INDEX=True
-#     docker-compose run archivebox help
+# Usage (ArchiveBox v0.9+):
+#     docker compose up -d
+#     docker compose exec archivebox archivebox add --depth=1 'https://example.com'
+#     docker compose exec archivebox archivebox help
+# Upgrading: docker compose pull && docker compose run --rm archivebox init && docker compose up -d
 # Documentation:
 #     https://github.com/ArchiveBox/ArchiveBox/wiki/Docker#docker-compose
-
-version: '2.4'
 
 services:
     archivebox:
         # build: .                              # for developers working on archivebox
-        image: ${DOCKER_IMAGE:-archivebox/archivebox:master}
-        command: server --quick-init 0.0.0.0:8000
+        # NOTE(keisuke): `master` tag stopped being updated (default branch is now `dev`); use `latest`.
+        image: ${DOCKER_IMAGE:-archivebox/archivebox:latest}
         ports:
-            - 8000:8000
+            - 8000:5797                         # v0.9 listens on 5797; keep the old host port 8000
         environment:
-            - ALLOWED_HOSTS=*                   # add any config options you want as env vars
-            - MEDIA_MAX_SIZE=750m
-            - SAVE_ARCHIVE_DOT_ORG=False
+            - BASE_URL=http://saginomiya.lan:8000  # canonical URL, used for redirects (required since v0.9)
+            - PUBLIC_ADD_VIEW=False
+            - ARCHIVEDOTORG_ENABLED=False       # was SAVE_ARCHIVE_DOT_ORG (<= v0.7)
             - TIMEOUT=600
-            - FETCH_MEDIA=True
-            # - SEARCH_BACKEND_ENGINE=sonic     # uncomment these if you enable sonic below
-            # - SEARCH_BACKEND_HOST_NAME=sonic
-            # - SEARCH_BACKEND_PASSWORD=SecretPassword
+            - YTDLP_ENABLED=True                # was FETCH_MEDIA
+            - YTDLP_MAX_SIZE=750m               # was MEDIA_MAX_SIZE
         volumes:
             - /tank/selfhosted/archivebox/data:/data
             # - ./archivebox:/app/archivebox    # for developers working on archivebox
+            - tmp:/tmp/archivebox               # lets one-off `docker compose run` commands reuse main server's runners
+        shm_size: 1gb                           # chrome runs better when it can use a decently sized shm pool
+        pids_limit: 2048
+        ulimits:
+            nofile: 8192
         restart: unless-stopped
         # NOTE(keisuke): Uncomment the following block to enable HTTPS connection.
         # labels:
@@ -106,3 +105,6 @@ services:
 # networks:
 #   traefik_default:
 #     external: true
+
+volumes:
+    tmp:
