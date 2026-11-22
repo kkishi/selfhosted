@@ -11,10 +11,12 @@ services:
         # build: .                              # for developers working on archivebox
         # NOTE(keisuke): `master` tag stopped being updated (default branch is now `dev`); use `latest`.
         image: ${DOCKER_IMAGE:-archivebox/archivebox:latest}
-        ports:
-            - 8000:5797                         # v0.9 listens on 5797; keep the old host port 8000
+        # NOTE(keisuke): No host port; accessed only via Traefik (LAN + Tailscale).
         environment:
-            - BASE_URL=http://saginomiya.lan:8000  # canonical URL, used for redirects (required since v0.9)
+            - BASE_URL=https://${HOSTNAME}      # canonical URL, used for redirects (required since v0.9)
+            - CSRF_TRUSTED_ORIGINS=https://${HOSTNAME}
+            - PUBLIC_INDEX=False                # require login to see the list of snapshots
+            - PUBLIC_SNAPSHOTS=False            # require login to see snapshot contents
             - PUBLIC_ADD_VIEW=False
             - ARCHIVEDOTORG_ENABLED=False       # was SAVE_ARCHIVE_DOT_ORG (<= v0.7)
             - TIMEOUT=600
@@ -29,14 +31,14 @@ services:
         ulimits:
             nofile: 8192
         restart: unless-stopped
-        # NOTE(keisuke): Uncomment the following block to enable HTTPS connection.
-        # labels:
-        #     - "traefik.docker.network=traefik_default"
-        #     - "traefik.http.routers.archivebox.rule=Host(`${HOSTNAME}`)"
-        #     - "traefik.http.routers.archivebox.tls=true"
-        #     - "traefik.http.routers.archivebox.tls.certresolver=production"
-        # networks:
-        #     - traefik_default
+        labels:
+            - "traefik.docker.network=traefik_default"
+            - "traefik.http.routers.archivebox.rule=Host(`${HOSTNAME}`)"
+            - "traefik.http.routers.archivebox.tls=true"
+            - "traefik.http.routers.archivebox.tls.certresolver=production"
+            - "traefik.http.services.archivebox.loadbalancer.server.port=5797"
+        networks:
+            - traefik_default
 
     # To run the Sonic full-text search backend, first download the config file to sonic.cfg
     # curl -O https://raw.githubusercontent.com/ArchiveBox/ArchiveBox/master/etc/sonic.cfg
@@ -101,10 +103,9 @@ services:
     #         ./data:/archivebox
     #         ./data/wayback:/webarchive
 
-# NOTE(keisuke): Uncomment the following block to enable HTTPS connection.
-# networks:
-#   traefik_default:
-#     external: true
+networks:
+  traefik_default:
+    external: true
 
 volumes:
     tmp:

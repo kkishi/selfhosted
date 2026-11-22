@@ -30,12 +30,18 @@ certificatesResolvers:
       email: keisuke.kishimoto@gmail.com
       storage: /data/letsencrypt_staging.json
       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
-      httpChallenge:
-        entryPoint: web
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
   production:
     acme:
       email: keisuke.kishimoto@gmail.com
       storage: /data/letsencrypt_prod.json
       caServer: "https://acme-v02.api.letsencrypt.org/directory"
-      httpChallenge:
-        entryPoint: web
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
